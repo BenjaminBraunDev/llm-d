@@ -19,6 +19,10 @@ This guide demonstrates how to deploy DeepSeek-R1-0528 using vLLM's P/D disaggre
 >
 > We plan to migrate to the upstream vLLM images in an upcoming release
 
+This guide also has an alternate variant:
+
+* **[DisaggregatedSet](./README.ds.md)** — the same deployment managed as a single LWS `DisaggregatedSet` resource, with coordinated P/D rollouts and `slices` for replicating the whole 32-GPU topology into independent copies.
+
 ## Default Configuration
 
 | Parameter                | Value                                                   |
@@ -50,6 +54,7 @@ This guide includes configurations for the following accelerators:
 | Backend               | Directory                                   | Notes                                      |
 | --------------------- | ------------------------------------------- | ------------------------------------------ |
 | NVIDIA GPU (GKE)      | `modelserver/gpu/vllm/gke/`                 | GKE deployment (H200)                      |
+| NVIDIA GPU (GKE + DisaggregatedSet) | `modelserver/gpu/vllm-ds/gke/` | Manages both roles as one LWS `DisaggregatedSet` with `slices`, see [DisaggregatedSet Guide](./README.ds.md) |
 | NVIDIA GPU (GKE A4)   | `modelserver/gpu/vllm/topology-aware/gke-a4/` | GKE deployment (B200)                    |
 | NVIDIA GPU (CoreWeave)| `modelserver/gpu/vllm/coreweave/`           | CoreWeave deployment                       |
 | NVIDIA GPU (GB200)    | `modelserver/gpu/vllm/dgx-cloud-gb200/`     | DGX Cloud GB200 deployment                 |
