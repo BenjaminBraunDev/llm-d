@@ -110,7 +110,12 @@ kubectl delete -n ${NAMESPACE} -k ${REPO_ROOT}/guides/${GUIDE_NAME}/modelserver/
 
 ## Validation status
 
-The DisaggregatedSet mechanics of this variant (multi-host role fan-out, DP-rank port routing through the DS-generated names, slice scaling, coordinated rollouts) were validated on GKE H200 (A3 Ultra, RoCE) at reduced scale. Full-scale 32-GPU-per-slice validation runs on the maintainers' E2E clusters alongside the main guide's pipelines.
+The DisaggregatedSet mechanics of this variant were validated end to end on GKE H200 (A3 Ultra) at reduced scale: one slice with 8 GPUs per role (`size: 1`, one node per role), GPUs allocated through DRA, and prefill-to-decode KV transfer over plain TCP. That exercise covered the per-role LWS fan-out, coordinated revision rollouts with stale-revision cleanup, DP-aware routing through the EPP and per-rank routing-proxy ports against DS-created pods, and NIXL KV transfer across nodes without any RDMA wiring (DeepEP all-to-all stays on NVLink when a role fits on one node). Full-scale 32-GPU-per-slice validation runs on the maintainers' E2E clusters alongside the main guide's pipelines.
+
+Two adjustments were needed for that reduced shape, worth knowing if you scale this guide down or run on a DRA-based cluster:
+
+* **DRA clusters need an explicit GPU toleration.** When GPUs are requested through DRA ResourceClaims instead of `nvidia.com/gpu` extended resources, GKE's automatic ExtendedResourceToleration does not apply, so the pod templates must explicitly tolerate the `nvidia.com/gpu=present:NoSchedule` node taint.
+* **Smaller roles need a smaller context window.** At 8 GPUs per role, DeepSeek-R1's weights leave too little KV cache headroom for the default 164K `max-model-len` under prefill's `--gpu-memory-utilization 0.80`, and the engine fails at startup. Cap `--max-model-len` (32768 worked) or raise the memory utilization for the prefill role.
 
 ## Further Reading
 
