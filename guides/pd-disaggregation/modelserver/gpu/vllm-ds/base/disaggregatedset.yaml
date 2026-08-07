@@ -25,7 +25,8 @@ spec:
   # domain across all DisaggregatedSets.
   # NOTE: placementPolicy is merged upstream (kubernetes-sigs/lws#916) and,
   # like slices, ships in the next LWS release after v0.9.0. Controllers at
-  # v0.9.0 or older reject this field.
+  # v0.9.0 or older reject this field. See the "Pinning Slices to Accelerator
+  # Domains" section of README.ds.md for per-platform topology label keys.
   # placementPolicy:
   #   type: ExclusiveSlice
   #   topology: topology.kubernetes.io/zone

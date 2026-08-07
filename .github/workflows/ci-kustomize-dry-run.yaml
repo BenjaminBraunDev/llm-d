@@ -235,8 +235,9 @@ jobs:
             overlay_name="$(basename "${overlay_dir%/}")"
             # skip the components directory
             [ "${overlay_name}" = "components" ] && continue
-            # Each accelerator dir may have one or more server subdirs (vllm, sglang)
-            for kust_dir in "${overlay_dir}"*/; do
+            # Each accelerator dir may have one or more server subdirs (vllm, sglang).
+            # vllm-ds nests its provider overlays (base/gke/coreweave) one level deeper.
+            for kust_dir in "${overlay_dir}"*/ "${overlay_dir}"vllm-ds/*/; do
               [ -f "${kust_dir}kustomization.yaml" ] || continue
               name="${kust_dir#guides/pd-disaggregation/modelserver/}"
               name="${name%/}"
